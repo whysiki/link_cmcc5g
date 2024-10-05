@@ -19,4 +19,20 @@ link_cmcc5g
 link_cmcc5g clear
 ```
 
-config file is in `C:\Users\Administrator\.cargo\bin\config.json`
+- config file is in `C:\Users\Administrator\.cargo\bin\config.json`
+
+
+- set start with windows
+get exe path in cmd
+```shell
+where link_cmcc5g
+```
+get exe path in powershell
+```shell
+Get-Command link_cmcc5g
+```
+- set start with windows in registry
+```shell
+reg add HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v link_cmcc5g /t REG_SZ /d "C:\Users\Administrator\.cargo\bin\link_cmcc5g.exe"
+```
+

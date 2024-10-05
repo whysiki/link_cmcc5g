@@ -20,6 +20,24 @@ pub mod wlan {
         })
     }
 
+    pub fn get_ssid() -> Result<String, String> {
+        let output = Command::new("cmd")
+            .args(&["/C", "netsh wlan show interfaces"])
+            .output()
+            .map_err(|err| format!("Failed to execute netsh command: {}", err))?;
+        let output_str = String::from_utf8_lossy(&output.stdout);
+        let ssid = output_str.lines().find_map(|line| {
+            if line.trim().starts_with("SSID") {
+                line.split(":")
+                    .nth(1)
+                    .map(|s| s.trim().to_string())
+            } else {
+                None
+            }
+        });
+        ssid.ok_or_else(|| "SSID not found".to_string())
+    }
+
     pub fn get_ipv4_address() -> Option<String> {
         let output = Command::new("cmd")
             .args(&["/C", "ipconfig /all"])

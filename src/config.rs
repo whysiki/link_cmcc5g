@@ -2,7 +2,7 @@ use serde::{ Deserialize, Serialize };
 use std::env;
 use std::fs::{ File, OpenOptions };
 use std::io::{ self, Read, Write };
-mod adapter;
+pub(crate) mod adapter;
 const BASE_URL: &str = "http://223.84.144.29:801/eportal/portal/login";
 const CALLBACK: &str = "dr1004";
 const LOGIN_METHOD: &str = "1";
