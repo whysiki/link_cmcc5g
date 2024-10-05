@@ -1,5 +1,3 @@
-// pub mod adapter;
-
 pub mod wlan {
     use std::io::{ self, Write };
     use std::process::Command;

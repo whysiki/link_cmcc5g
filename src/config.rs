@@ -1,7 +1,7 @@
 use serde::{ Deserialize, Serialize };
+use std::env;
 use std::fs::{ File, OpenOptions };
 use std::io::{ self, Read, Write };
-use std::path::Path;
 mod adapter;
 const BASE_URL: &str = "http://223.84.144.29:801/eportal/portal/login";
 const CALLBACK: &str = "dr1004";
@@ -33,27 +33,29 @@ fn read_config(file_path: &str) -> io::Result<LoginConfig> {
     let config: LoginConfig = serde_json::from_str(&contents)?;
     Ok(config)
 }
-fn write_config(file_path: &str, config: &LoginConfig) -> io::Result<()> {
+pub fn write_config(file_path: &str, config: &LoginConfig) -> io::Result<()> {
     let mut file = OpenOptions::new().write(true).create(true).truncate(true).open(file_path)?;
     let contents = serde_json::to_string_pretty(config)?;
     file.write_all(contents.as_bytes())?;
     Ok(())
 }
-fn get_input(prompt: &str) -> String {
+pub fn get_input(prompt: &str) -> String {
     let mut input = String::new();
     println!("{}", prompt);
     io::stdin().read_line(&mut input).expect("Failed to read line");
     input.trim().to_string()
 }
 
+pub fn get_config_path() -> String {
+    let exe_path = env::current_exe().expect("Failed to get current executable path");
+    let mut config_path = exe_path.parent().expect("Failed to get parent directory").to_path_buf();
+    config_path.push("config.json");
+    config_path.to_str().expect("Failed to convert path to string").to_string()
+}
+
 pub fn get_login_config() -> LoginConfig {
-    let code_path = Path::new(file!())
-        .parent()
-        .unwrap();
-    let file_path = "config.json";
-    let full_path = code_path.join(file_path);
-    let full_path_str = full_path.to_str().unwrap();
-    let file_path = full_path_str;
+    let binding = get_config_path();
+    let file_path = binding.as_str();
     match read_config(file_path) {
         Ok(loaded_config) => {
             println!("Loaded config: {:?}", loaded_config);
@@ -76,7 +78,7 @@ pub fn get_login_config() -> LoginConfig {
                 v: V.to_string(),
             };
             write_config(file_path, &config).unwrap();
-            println!("Configuration saved!");
+            println!("Configuration saved to: {}", file_path);
             config
         }
     }
