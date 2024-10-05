@@ -18,3 +18,5 @@ link_cmcc5g
 ```shell
 link_cmcc5g clear
 ```
+
+config file is in `C:\Users\Administrator\.cargo\bin\config.json`
