@@ -82,7 +82,7 @@ async fn try_link_cmcc(
 
 pub async fn connect_to_cmcc() -> Result<(), Box<dyn std::error::Error>> {
     let retry_times = 40;
-    let retry_interval = Duration::from_secs(5);
+    let retry_interval = Duration::from_secs(15);
     let client = reqwest::Client::new();
 
     for attempt in 1..=retry_times {
