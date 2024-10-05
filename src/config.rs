@@ -57,7 +57,8 @@ pub fn get_login_config() -> LoginConfig {
     let binding = get_config_path();
     let file_path = binding.as_str();
     match read_config(file_path) {
-        Ok(loaded_config) => {
+        Ok(mut loaded_config) => {
+            loaded_config.wlan_user_ip = adapter::wlan::get_ipv4_address().unwrap();
             println!("Loaded config: {:?}", loaded_config);
             loaded_config
         }
