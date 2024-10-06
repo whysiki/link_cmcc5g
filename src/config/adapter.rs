@@ -22,7 +22,7 @@ pub mod wlan {
 
     pub fn get_ssid() -> Result<String, String> {
         let output = Command::new("cmd")
-            .args(&["/C", "netsh wlan show interfaces"])
+            .args(["/C", "netsh wlan show interfaces"])
             .output()
             .map_err(|err| format!("Failed to execute netsh command: {}", err))?;
         let output_str = String::from_utf8_lossy(&output.stdout);
@@ -40,7 +40,7 @@ pub mod wlan {
 
     pub fn get_ipv4_address() -> Option<String> {
         let output = Command::new("cmd")
-            .args(&["/C", "ipconfig /all"])
+            .args(["/C", "ipconfig /all"])
             .output()
             .expect("Failed to execute ipconfig command");
         let output_str = String::from_utf8_lossy(&output.stdout);
@@ -53,7 +53,7 @@ pub mod wlan {
             return None;
         }
         if adapters.len() == 1 {
-            return extract_ipv4_address(&adapters[0]);
+            extract_ipv4_address(adapters[0])
         } else {
             println!("Found the following Wireless LAN adapters:");
             for (i, adapter) in adapters.iter().enumerate() {
@@ -75,7 +75,7 @@ pub mod wlan {
                 println!("Invalid selection");
                 return None;
             }
-            return extract_ipv4_address(&adapters[choice - 1]);
+            extract_ipv4_address(adapters[choice - 1])
         }
     }
 }

@@ -85,7 +85,7 @@ pub async fn connect_to_cmcc() -> Result<(), Box<dyn std::error::Error>> {
     let retry_interval = Duration::from_secs(5);
     let client = reqwest::Client::new();
     for attempt in 1..=retry_times {
-        if let Some(ssid) = config::adapter::wlan::get_ssid().ok() {
+        if let Ok(ssid) = config::adapter::wlan::get_ssid() {
             let ssid_trimmed = ssid.trim();
             if ssid_trimmed == "CMCC-5G" {
                 println!("Matched SSID: {}, attempting to connect...", ssid_trimmed);

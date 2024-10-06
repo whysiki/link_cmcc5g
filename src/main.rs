@@ -1,4 +1,3 @@
-use tokio;
 mod config;
 use std::env;
 mod connect;
