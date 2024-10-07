@@ -33,10 +33,30 @@ async fn link_cmcc(client: &reqwest::Client) -> Result<(), Box<dyn std::error::E
 
     let request = client.get(&url).headers(headers);
 
+    // let mut reject_time: i32 = 0;
+
     match request.send().await {
         Ok(response) => {
             match response.text().await {
-                Ok(body) => println!("{}", body),
+                Ok(body) => {
+                    if body.contains("Reject by concurrency control") {
+                        println!("\x1b[33m{}\x1b[0m", "Reject by concurrency control");
+                        // error!
+                        config::get_input("Please press any key to continue....");
+                        // 终止程序
+                        std::process::exit(1);
+                        // return Err(
+                        //     Box::new(
+                        //         std::io::Error::new(
+                        //             std::io::ErrorKind::Other,
+                        //             "Reject by concurrency control"
+                        //         )
+                        //     )
+                        // );
+                    } else {
+                        println!("{}", body);
+                    }
+                }
                 Err(e) => error!("Failed to read response body: {}", e),
             }
         }

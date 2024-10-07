@@ -1,5 +1,5 @@
 use serde::{ Deserialize, Serialize };
-use std::env;
+use std::{ env, fs };
 use std::fs::{ File, OpenOptions };
 use std::io::{ self, Read, Write };
 pub(crate) mod adapter;
@@ -49,6 +49,10 @@ pub fn get_input(prompt: &str) -> String {
 pub fn get_config_path() -> String {
     let exe_path = env::current_exe().expect("Failed to get current executable path");
     let mut config_path = exe_path.parent().expect("Failed to get parent directory").to_path_buf();
+    config_path.push("link_cmcc5g");
+    if !config_path.exists() {
+        fs::create_dir_all(&config_path).expect("Failed to create link_cmcc5g directory");
+    }
     config_path.push("config.json");
     config_path.to_str().expect("Failed to convert path to string").to_string()
 }

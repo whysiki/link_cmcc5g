@@ -20,21 +20,58 @@ pub mod wlan {
         })
     }
 
+    // pub fn get_ssid() -> Result<String, String> {
+    //     let output = Command::new("cmd")
+    //         .args(["/C", "netsh wlan show interfaces"])
+    //         .output()
+    //         .map_err(|err| format!("Failed to execute netsh command: {}", err))?;
+    //     let output_str = String::from_utf8_lossy(&output.stdout);
+    //     let ssid = output_str.lines().find_map(|line| {
+    //         if line.trim().starts_with("SSID") {
+    //             line.split(":")
+    //                 .nth(1)
+    //                 .map(|s| s.trim().to_string())
+    //         } else {
+    //             None
+    //         }
+    //     });
+    //     ssid.ok_or_else(|| "SSID not found".to_string())
+    // }
+
     pub fn get_ssid() -> Result<String, String> {
-        let output = Command::new("cmd")
-            .args(["/C", "netsh wlan show interfaces"])
+        let output = Command::new("powershell")
+            .args([
+                "-Command",
+                "(Get-NetAdapter | Where-Object {$_.Status -eq 'Up'}).Name | ForEach-Object { Get-NetConnectionProfile -InterfaceAlias $_ }",
+            ])
             .output()
-            .map_err(|err| format!("Failed to execute netsh command: {}", err))?;
+            .map_err(|err| format!("Failed to execute PowerShell command: {}", err))?;
+        // let output_str = String::from_utf8_lossy(&output.stdout);
         let output_str = String::from_utf8_lossy(&output.stdout);
-        let ssid = output_str.lines().find_map(|line| {
-            if line.trim().starts_with("SSID") {
-                line.split(":")
-                    .nth(1)
-                    .map(|s| s.trim().to_string())
-            } else {
-                None
+        // let output_str = str
+        //     ::from_utf8(&output.stdout)
+        //     .map_err(|err| format!("Failed to parse PowerShell output: {}", err))?;
+        // // .map_err(|err| format!("Failed to parse PowerShell output: {}", err))?;
+
+        // println!("{}", output_str);
+
+        let mut ssid = None;
+        for line in output_str.lines() {
+            if line.trim().starts_with("InterfaceAlias") {
+                if line.contains("WLAN") {
+                    continue;
+                } else {
+                    break;
+                }
             }
-        });
+            if line.trim().starts_with("Name") {
+                ssid = line
+                    .split(":")
+                    .nth(1)
+                    .map(|s| s.trim().to_string());
+                break;
+            }
+        }
         ssid.ok_or_else(|| "SSID not found".to_string())
     }
 
